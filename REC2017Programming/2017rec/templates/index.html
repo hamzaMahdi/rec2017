@@ -1,0 +1,57 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <title>Ryerson Engineering Competition 2017 - Programming</title>
+    <style>
+        table {
+            border: 1px solid blue;
+            border-collapse: separate;
+            border-spacing: 3px 3px;
+        }
+    </style>
+    <script type="text/javascript" src="//code.jquery.com/jquery-2.1.4.min.js"></script>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.5/socket.io.min.js"></script>
+    <script type="text/javascript" charset="utf-8">
+        $(document).ready(function(){
+            namespace = '/test';
+            var socket = io.connect('http://' + document.domain + ':' + location.port + namespace);
+
+            socket.on('connect', function() {
+                socket.emit('my event', {data: 'connected!'});
+            });
+
+            socket.on('disconnect', function() {
+                $log.append('<br>Disconnected');
+            });
+            socket.on('my response', function(progress) {
+                if( progress != undefined && progress.elapsed_time != undefined) {
+                    $('#log tr:last').after('<tr><td>' + progress.elapsed_time + '</td><td>' + progress.journey + '</td></tr>');
+                    //$('#log').append('<tr><td>' + progress.elapsed_time + '</td><td>' + progress.journey + '</td></tr>');
+                }
+            });
+
+            // event handler for server sent data
+            // the data is displayed in the "Received" section of the page
+            // handlers for the different forms in the page
+            // these send data to the server in a variety of ways
+            // $('form#emit').submit(function(event) {
+            //     socket.emit('my event', {data: $('#emit_data').val()});
+            //     return false;
+            // });
+            $('form#disconnect').submit(function(event) {
+                socket.emit('disconnect request');
+                return false;
+            });
+        });
+    </script>
+</head>
+<body>
+    <h1>Ryerson Engineering Competition 2017</h1>
+    <hr/>
+    <h2>Progress:</h2>
+    <div>street map goes here</div>
+    <img src="/static/5x5.png"/>
+    <hr/>
+    <table id="log"><tr><th>Elapsed time</th><th>Journey</th></tr></table>
+</body>
+</html>
